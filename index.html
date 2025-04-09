@@ -67,6 +67,14 @@
       background: #1e88e5;
     }
   </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('PropellerAds SW registered!', reg))
+        .catch(err => console.error('SW registration failed:', err));
+    }
+  </script>
+  
 </head>
 <body>
   <h1>Pixeldrain Multi Bypass Downloader</h1>
