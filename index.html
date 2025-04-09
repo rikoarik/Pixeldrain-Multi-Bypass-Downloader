@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixeldrain Multi Bypass Downloader</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #1f1f1f;
+      color: #f0f0f0;
+      padding: 2rem;
+      text-align: center;
+    }
+    textarea {
+      width: 90%;
+      height: 200px;
+      background: #2c2c2c;
+      color: #f0f0f0;
+      border: none;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #4caf50;
+      color: white;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .output {
+      margin-top: 2rem;
+    }
+    .link-list {
+      text-align: left;
+      max-width: 800px;
+      margin: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .link-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c2c2c;
+      margin: 0.25rem 0;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+    .link-text {
+      color: #87cefa;
+      word-break: break-all;
+      text-decoration: none;
+    }
+    .small-btn {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      background: #2196f3;
+    }
+    .small-btn:hover {
+      background: #1e88e5;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pixeldrain Multi Bypass Downloader</h1>
+  <p>Masukkan semua link di bawah </p>
+  <textarea id="linkInput" placeholder="
+  https://pixeldrain.com/u/xxxx 
+  https://pixeldrain.com/u/yyyy"></textarea>
+  <br />
+  <button onclick="bypassLinks()">⚡ Bypass Links</button>
+  <div class="output" id="output" style="display: none">
+    <h3>Bypassed Links:</h3>
+    <div id="linkList" class="link-list"></div>
+    <button onclick="saveAsTextFile()">💾 Save Bypass Link as TXT</button>
+  </div>
+
+  <script>
+    let bypassedLinks = [];
+
+    function extractLinks(text) {
+      const lines = text.split(/\n|\r/);
+      return lines
+        .map(line => {
+          const match = line.match(/https:\/\/pixeldrain\.com\/u\/([\w]+)/);
+          return match ? match[1] : null;
+        })
+        .filter(Boolean);
+    }
+
+    function bypassLinks() {
+      const input = document.getElementById("linkInput").value;
+      const ids = extractLinks(input);
+      const bypassUrl = "https://pd.cybar.xyz/";
+      const linkListDiv = document.getElementById("linkList");
+      const outputDiv = document.getElementById("output");
+      linkListDiv.innerHTML = "";
+      outputDiv.style.display = "block";
+
+      bypassedLinks = ids.map(id => bypassUrl + id);
+
+      bypassedLinks.forEach(link => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "link-item";
+
+        const a = document.createElement("a");
+        a.href = link;
+        a.textContent = link;
+        a.className = "link-text";
+        a.target = "_blank";
+
+        const dlBtn = document.createElement("button");
+        dlBtn.textContent = "⬇️ Download";
+        dlBtn.className = "small-btn";
+        dlBtn.onclick = () => {
+          const tempLink = document.createElement("a");
+          tempLink.href = link;
+          tempLink.download = "";
+          document.body.appendChild(tempLink);
+          tempLink.click();
+          document.body.removeChild(tempLink);
+        };
+
+        wrapper.appendChild(a);
+        wrapper.appendChild(dlBtn);
+        linkListDiv.appendChild(wrapper);
+      });
+    }
+
+    function saveAsTextFile() {
+      if (bypassedLinks.length === 0) return;
+      const blob = new Blob([bypassedLinks.join("\n")], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bypassed_links.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
